@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Programa Escalada AutoPrime</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="icone.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --accent: #38bdf8;
+      --dark-bg: #0f172a;
+      --dark-card: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --gradient-main: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+      --gradient-card: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(30, 41, 59, 1) 100%);
+    }
+
+    * {
+      border: 0 solid #e5e7eb;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4%;
+      height: 64px;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-logo {
+      height: 40px;
+      width: auto;
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.2));
+    }
+
+    .navbar-links {
+      display: none;
+      gap: 20px;
+    }
+
+    .navbar-links a {
+      color: var(--text-muted);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.3s;
+      position: relative;
+      padding: 4px 0;
+    }
+
+    .navbar-links a:hover,
+    .navbar-links a.active {
+      color: #fff;
+    }
+
+    .navbar-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -2px;
+      left: 0;
+      background: var(--gradient-main);
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .navbar-links a:hover::after {
+      width: 100%;
+    }
+
+    /* Header / Hero */
+    header {
+      padding: 140px 5% 80px 5%;
+      background: radial-gradient(circle at top center, #1e293b 0%, #0f172a 70%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: var(--primary);
+      filter: blur(180px);
+      opacity: 0.15;
+      border-radius: 50%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .logo-hero {
+      width: 200px;
+      margin-bottom: 24px;
+      animation: fadeDown 1s ease-out;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+    }
+
+    header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 4rem;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+      animation: fadeUp 1s ease-out 0.2s backwards;
+      line-height: 1.1;
+    }
+
+    header p {
+      font-size: 1.35rem;
+      max-width: 900px;
+      margin: 0 auto;
+      color: var(--text-muted);
+      font-weight: 400;
+      animation: fadeUp 1s ease-out 0.4s backwards;
+      line-height: 1.6;
+    }
+
+    /* Main Layout */
+    main {
+      padding: 0 4%;
+      margin-bottom: 80px;
+      max-width: 1600px;
+      /* Widened container */
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    section {
+      padding: 40px 0;
+      /* Reduced padding */
+      position: relative;
+      min-height: 90vh;
+      /* Aim for full screen feeling */
+      display: flex;
+      align-items: center;
+    }
+
+    .section-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Alternating Layout */
+    .section-container.reverse {
+      direction: rtl;
+    }
+
+    /* Card Styling */
+    .content-box {
+      background: var(--gradient-card);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: left;
+      direction: ltr;
+      /* Reset direction for text content */
+      height: fit-content;
+    }
+
+    .content-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.15);
+      border-color: rgba(56, 189, 248, 0.2);
+    }
+
+    section h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      position: relative;
+      display: inline-block;
+      line-height: 1.2;
+    }
+
+    section h2::after {
+      content: '';
+      position: absolute;
+      width: 80px;
+      height: 4px;
+      background: var(--gradient-main);
+      bottom: -6px;
+      left: 0;
+      border-radius: 4px;
+    }
+
+    section h3 {
+      font-size: 1.4rem;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    section p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    ul {
+      margin-top: 12px;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .highlight {
+      color: #fff;
+      font-weight: 600;
+      background: rgba(37, 99, 235, 0.15);
+      padding: 0 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .section-img-wrapper {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.4s ease;
+      direction: ltr;
+      /* Reset direction */
+      max-height: 80vh;
+      /* Limit image height to ensure screen fit */
+      display: flex;
+      justify-content: center;
+      background: #0f172a;
+    }
+
+    .section-img-wrapper:hover {
+      transform: scale(1.01);
+      box-shadow: 0 32px 64px -12px rgba(37, 99, 235, 0.25);
+    }
+
+    .section-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 5%;
+      text-align: center;
+      background: #020617;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+    }
+
+    footer p {
+      margin: 6px 0;
+      font-size: 0.95rem;
+    }
+
+    /* Extra AP Section Styles */
+    .ap-section {
+      margin-top: 40px;
+      display: block;
+      /* Override flex for this long section */
+    }
+
+    .ap-header {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto 50px auto;
+    }
+
+    .ap-header h2 {
+      text-align: center;
+    }
+
+    .ap-header h2::after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .ap-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .ap-card {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s;
+    }
+
+    .ap-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .ap-card--accent {
+      background: linear-gradient(145deg, rgba(37, 99, 235, 0.1) 0%, rgba(15, 23, 42, 0.4) 100%);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+    }
+
+    .ap-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .ap-badge {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .ap-steps {
+      padding-left: 0;
+      list-style: none;
+      counter-reset: steps;
+    }
+
+    .ap-steps li {
+      position: relative;
+      padding-left: 42px;
+      margin-bottom: 16px;
+    }
+
+    .ap-steps li::before {
+      counter-increment: steps;
+      content: counter(steps);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    /* Animations */
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease-out;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Media Queries */
+    @media (min-width: 900px) {
+      .navbar-links {
+        display: flex;
+      }
+
+      .section-container {
+        grid-template-columns: 1.2fr 1fr;
+        /* Image takes slightly more space, or adjust to 1fr 1fr if image too big */
+        gap: 60px;
+      }
+
+      /* If reverse, we want text (content-box) to be the smaller or equal column */
+      .section-container.reverse {
+        grid-template-columns: 1fr 1.2fr;
+        /* Text on left (visually right due to rtl), Image on "left" (visually left) */
+      }
+
+      header h1 {
+        font-size: 5rem;
+      }
+
+      .ap-grid--2 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .ap-grid--3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      /* Specific override for horizontal layout requested by user */
+      .section-container {
+        grid-template-columns: 55% 40%;
+        /* Image wider, text narrower but wider container compensates */
+      }
+
+      .section-container.reverse {
+        grid-template-columns: 40% 55%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <img src="logo.png" alt="Logo AutoPrime" class="navbar-logo">
+    <div class="navbar-links">
+      <a href="#visao-geral">Visão Geral</a>
+      <a href="#fase1">Fase 1</a>
+      <a href="#fase2">Fase 2</a>
+      <a href="#fase3">Fase 3</a>
+      <a href="#fase4">Fase 4</a>
+      <a href="#fase5">Fase 5</a>
+      <a href="#fase6">Fase 6</a>
+      <a href="#fase7">Fase 7</a>
+      <a href="#metodologia">Metodologia</a>
+      <a href="#plataforma">Software</a>
+      <a href="#contrapartida-rede">Contrapartida</a>
+    </div>
+  </nav>
+
+  <header>
+    <div class="header-content">
+      <img src="logo.png" alt="Logo AutoPrime" class="logo-hero">
+      <h1>Programa Escalada AutoPrime</h1>
+      <p>
+        Um programa estruturado de desenvolvimento coletivo para elevar o nível técnico,
+        produtivo, gerencial e financeiro das oficinas de funilaria e pintura,
+        respeitando a realidade individual de cada empresa.
+      </p>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="visao-geral" class="reveal">
+      <div class="section-container">
+        <div class="section-img-wrapper">
+          <img src="img/VisãoGeral.png" alt="Visão geral do programa" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Visão Geral do Programa</h2>
+          <p>
+            O <span class="highlight">Escalada AutoPrime</span> nasce da prática real,
+            do chão de oficina, da vivência em centenas de operações diferentes.
+            Não é um modelo engessado, nem uma receita genérica.
+          </p>
+          <p>
+            É um programa de evolução em grupo, com acompanhamento próximo,
+            troca de experiências, análise técnica profunda e planos de ação individualizados.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fase1" class="reveal">
+      <div class="section-container reverse">
+        <div class="section-img-wrapper">
+          <img src="img/Fase1.png" alt="Mapeamento das áreas produtivas" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Fase 1 — Mapeamento de Áreas</h2>
+          <p>
+            A primeira etapa começa onde tudo realmente acontece:
+            <span class="highlight">no chão da oficina</span>.
+            Cada oficina irá coletar imagens, vídeos e dados reais.
+          </p>
+          <h3>O que será analisado</h3>
+          <ul>
+            <li>Aspecto geral das áreas produtivas</li>
+            <li>Organização e limpeza por setor</li>
+            <li>Layout atual e fluxo de veículos</li>
+            <li>Capacidade produtiva instalada</li>
+            <li>Distribuição da equipe</li>
+          </ul>
+          <h3>Resultado Esperado</h3>
+          <p>
+            Planos de ação práticos para reorganização de layout e melhoria imediata do ambiente produtivo.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fase2" class="reveal">
+      <div class="section-container">
+        <div class="section-img-wrapper">
+          <img src="img/Fase2.png" alt="Equipamentos e ferramentas" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Fase 2 — Ferramentas e Insumos</h2>
+          <p>
+            Entender sua estrutura técnica. Vamos comparar <span class="highlight">processos, produtos e
+              ferramentas</span>
+            entre oficinas para identificar as melhores práticas.
+          </p>
+          <h3>Pontos de Análise</h3>
+          <ul>
+            <li>Ferramentas disponíveis por técnico</li>
+            <li>Sistemas de lixamento e aspiração</li>
+            <li>Consumo e marcas de tintas/vernizes</li>
+            <li>Tecnologia de pistolas de pintura</li>
+          </ul>
+          <p style="margin-top:20px">
+            O objetivo é um <span class="highlight">plano de melhoria técnica</span>
+            alinhado à sua capacidade de investimento.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fase3" class="reveal">
+      <div class="section-container reverse">
+        <div class="section-img-wrapper">
+          <img src="img/Fase3.png" alt="Rotina do chefe de oficina" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Fase 3 — Gestão da Produção</h2>
+          <p>
+            Com o ambiente alinhado, focamos no coração da oficina: <span class="highlight">o chefe de produção</span>.
+          </p>
+          <ul>
+            <li>Rotina diária de liderança</li>
+            <li>Distribuição e controle de serviços</li>
+            <li>Monitoramento de prazos</li>
+            <li>Gestão de pátio e fluxo</li>
+          </ul>
+          <p>
+            Construiremos juntos a <span class="highlight">metodologia ideal</span> para garantir ritmo e entrega.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fase4" class="reveal">
+      <div class="section-container">
+        <div class="section-img-wrapper">
+          <img src="img/Fase4.png" alt="Gestão de peças e almoxarifado" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Fase 4 — Gestão de Peças</h2>
+          <p>
+            Peças representam um dos maiores riscos de perda e atraso. Vamos blindar esse setor.
+          </p>
+          <ul>
+            <li>Organização física (novas e retornadas)</li>
+            <li>Gestão de sucata e logística reversa</li>
+            <li>Processo de conferência na chegada</li>
+            <li>Fluxo de entrega para o técnico</li>
+          </ul>
+          <p>
+            Um fluxo claro reduz perdas, atrasos e "sumiço" de componentes.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fase5" class="reveal">
+      <div class="section-container reverse">
+        <div class="section-img-wrapper">
+          <img src="img/Fase5.png" alt="Processo orçamentário e ticket médio" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Fase 5 — Orçamento e Ticket Médio</h2>
+          <p>
+            <span class="highlight">Capturar valor real</span>. Garantir que tudo o que é feito, seja cobrado.
+          </p>
+          <ul>
+            <li>Metodologia de fechamento de orçamentos</li>
+            <li>Gestão eficiente de complementos</li>
+            <li>Análise de itens esquecidos</li>
+            <li>Estratégias para elevar o ticket médio</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="fase6" class="reveal">
+      <div class="section-container">
+        <div class="section-img-wrapper">
+          <img src="img/Fase6.png" alt="Atendimento ao cliente" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Fase 6 — Experiência do Cliente</h2>
+          <p>
+            Alinhar <span class="highlight">processo, discurso e postura</span> para transmitir profissionalismo e
+            confiança.
+          </p>
+          <ul>
+            <li>Ambiente de recepção e conforto</li>
+            <li>Abordagem e vendas consultivas</li>
+            <li>Checklist de entrada rigoroso</li>
+            <li>Comunicação proativa durante o reparo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="fase7" class="reveal">
+      <div class="section-container reverse">
+        <div class="section-img-wrapper" style="transform: translateY(30px);">
+          <img src="img/Fase7.png" alt="Rotina do gestor" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Fase 7 — Rotina do Gestor</h2>
+          <p>
+            Por fim, o dono da oficina assume seu papel estratégico.
+          </p>
+          <p>
+            Sair do operacional para atuar <span class="highlight">no lugar certo</span>:
+            analisando dados, tomando decisões e garantindo que o sistema funcione sem sua presença constante na
+            produção.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="metodologia" class="reveal">
+      <div class="section-container">
+        <div class="section-img-wrapper">
+          <img src="img/Metodologia.png" alt="Metodologia do programa" class="section-img">
+        </div>
+        <div class="content-box">
+          <h2>Nossa Metodologia</h2>
+          <p>
+            O Escalada AutoPrime combina inteligência coletiva com ação individual.
+          </p>
+          <ul>
+            <li>Coleta de dados da sua realidade</li>
+            <li>Análise comparativa em grupo (benchmarking)</li>
+            <li>Planos de ação direcionados</li>
+            <li>Mentoria e acompanhamento próximo</li>
+          </ul>
+          <p>
+            Não existe regra única. Existe método, experiência e adaptação.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="ap-divider"></div>
+
+    <!-- Software Section (Improved) -->
+    <section id="plataforma" class="ap-section reveal">
+      <div class="ap-header">
+        <h2>Plataforma Tecnológica Escalada</h2>
+        <p style="color:var(--text-muted); font-size:1.25rem;">
+          O Sistema Operacional da Oficina do Futuro.
+        </p>
+      </div>
+
+      <div class="ap-grid">
+        <div class="ap-grid ap-grid--2">
+          <article class="ap-card">
+            <h3>Inteligência de Gestão e Rotina</h3>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">
+              O Escalada não foca apenas na operação, mas principalmente na <strong>evolução do gestor</strong>. É uma
+              plataforma de aprendizado e método.
+            </p>
+            <ul style="margin-top:20px;">
+              <li><strong>Rotina Guiada:</strong> O sistema estrutura uma cadeia de ações, direcionando o foco para o
+                que
+                irá gerar mais resultados na gestão.</li>
+              <li><strong>Aprendizado Contínuo:</strong> Cada ação vem acompanhada de orientações sobre como
+                interpretá-la.</li>
+              <li><strong>Decisão por Método:</strong> Substituímos a intuição por processos claros de análise e tomada
+                de decisão.</li>
+              <li><strong>Evolução de Nível:</strong> Um roadmap que guia seu crescimento pessoal, transformando o dono
+                em um líder estratégico.</li>
+            </ul>
+          </article>
+
+          <article class="ap-card ap-card--accent">
+            <h3>Sua Nova Postura Profissional</h3>
+            <div class="ap-badges">
+              <span class="ap-badge">Visão Estratégica</span>
+              <span class="ap-badge">Disciplina Gerencial</span>
+              <span class="ap-badge">Inovação</span>
+            </div>
+            <p style="color:#cbd5e1; margin-top:16px; font-size: 1.1rem; line-height: 1.6;">
+              O sistema tira você do ciclo vicioso de "apagar incêndios" e ensina, na prática, como conduzir seu negócio
+              com ações preditivas e visão de futuro.
+            </p>
+            <p style="color:#fff; margin-top:12px; font-weight: 600;">
+              Não se trata apenas de tecnologia. É um método para você se tornar o gestor que sua empresa precisa.
+            </p>
+          </article>
+        </div>
+
+        <div class="ap-grid ap-grid--3" style="margin-top:40px;">
+          <article class="ap-card">
+            <h3>1. Diagnóstico Algorítmico</h3>
+            <p class="ap-text">
+              Nosso algoritmo classifica sua oficina em 5 Níveis de Maturidade e Operacional, gerando um roadmap
+              automático de evolução.
+            </p>
+            <ol class="ap-steps">
+              <li><strong>Caótico</strong> (Dependência Total)</li>
+              <li><strong>Organizado</strong> (Início do Padrão)</li>
+              <li><strong>Gerenciado</strong> (Controle de Dados)</li>
+              <li><strong>Otimizado</strong> (Alta Performance)</li>
+              <li><strong>AutoPrime</strong> (Excelência & Escala)</li>
+            </ol>
+          </article>
+
+          <article class="ap-card">
+            <h3>2. Assistente Virtual (GA)</h3>
+            <p class="ap-text">
+              O <strong>GA (Gestor Artificial)</strong> é sua IA dedicada.
+            </p>
+            <ul>
+              <li>Aprendizado contínuo.</li>
+              <li>Assistente integral.</li>
+              <li>Sugere correções de rota.</li>
+              <li>Sugere rituais de liderança e procedimentos de gestão.</li>
+            </ul>
+          </article>
+
+          <article class="ap-card">
+            <h3>3. Gestão de Jornada</h3>
+            <p class="ap-text">
+              Gamificação da evolução da sua empresa.
+            </p>
+            <ul>
+              <li>Desafios semanais liberados no sistema.</li>
+              <li>Upload de evidências (fotos/vídeos) para validação.</li>
+              <li>Scorecard de desempenho da oficina.</li>
+              <li>Ranking de performance na rede AutoPrime.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCO: CONTRAPARTIDA + CRESCIMENTO EM REDE -->
+    <section id="contrapartida-rede" class="ap-section reveal">
+      <div class="ap-header">
+        <h2>Crescimento é via de mão dupla</h2>
+        <p style="color:var(--text-muted); font-size:1.25rem;">
+          Compromisso sagrado para manter a rede forte.
+        </p>
+      </div>
+
+      <div class="ap-grid">
+        <div class="ap-grid ap-grid--2">
+          <!-- Card 1 -->
+          <article class="ap-card">
+            <h3>A Contrapartida do Grupo</h3>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">
+              Para fazer parte do Escalada, cada oficina assume um compromisso de expansão.
+            </p>
+            <ul style="margin-top:20px;">
+              <li><strong>Regra dos 60 Dias:</strong> Conversar com 1 dono de oficina a cada bimestres.</li>
+              <li><strong>Disseminar:</strong> Apresentar a proposta da Rede AutoPrime.</li>
+              <li><strong>Convidar:</strong> Trazer bons parceiros para o ecossistema.</li>
+            </ul>
+            <p style="margin-top:16px; color:#cbd5e1; font-size: 0.95rem; font-style: italic;">
+              Manter o grupo vivo e forte é responsabilidade de todos.
+            </p>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="ap-card ap-card--accent">
+            <h3>O Ciclo de Força</h3>
+            <div class="ap-badges">
+              <span class="ap-badge">A Rede Ajuda o Grupo</span>
+              <span class="ap-badge">O Grupo Ajuda a Rede</span>
+            </div>
+            <p style="color:#cbd5e1; margin-top:16px; font-size: 1.1rem; line-height: 1.6;">
+              Nós entregamos método, tecnologia e suporte. Vocês entregam credibilidade e expansão qualificada.
+            </p>
+            <p style="color:#fff; margin-top:12px; font-weight: 600;">
+              Juntos somos mais fortes. Juntos crescemos mais rápido.
+            </p>
+          </article>
+        </div>
+
+        <!-- Manifesto / Footer of section -->
+        <div style="margin-top: 40px; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+          <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 16px;">Elevar o nível do setor inteiro</h3>
+          <p style="color: var(--text-muted); font-size: 1.1rem;">
+            Não falamos de melhorar uma oficina isoladamente. Falamos de criar padrão, cultura e futuro para todos.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="conclusao" class="reveal" style="text-align:center; padding: 120px 0;">
+      <div style="max-width:900px; margin:0 auto;">
+        <h2>O Futuro do benchmarking Começa Agora</h2>
+        <p style="font-size:1.4rem; margin-top:20px; color: var(--text-main);">
+          O <span class="highlight">Escalada AutoPrime</span> não é apenas sobre melhorar a gestão.<br>
+          É sobre construir uma<strong>máquina de eficiência e crescimento</strong>.
+        </p>
+        <p style="font-size:1.2rem; margin-top:16px; color: var(--text-muted);">
+          Bem-vindo à Era da Gestão 4.0 na Funilaria e Pintura.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Rede AutoPrime • Programa Escalada AutoPrime</p>
+    <p>&copy; 2025 Construindo oficinas melhores. Juntos.</p>
+  </footer>
+
+  <script>
+    // Scroll Reveal Animation
+    function reveal() {
+      var reveals = document.querySelectorAll(".reveal");
+      for (var i = 0; i < reveals.length; i++) {
+        var windowHeight = window.innerHeight;
+        var elementTop = reveals[i].getBoundingClientRect().top;
+        var elementVisible = 100; // Trigger slightly earlier
+        if (elementTop < windowHeight - elementVisible) {
+          reveals[i].classList.add("active");
+        }
+      }
+    }
+
+    window.addEventListener("scroll", reveal);
+    reveal();
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+
+</body>
+
+</html>
